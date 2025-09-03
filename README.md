@@ -18,10 +18,6 @@
 - **Backend & Auth**: Firebase (Firestore + Authentication)
 - **AI Integration**: Gemini AI (for itinerary generation)
 
-## 📸 Screenshots
-
-![Screenshot 2025-06-30 022501](https://github.com/user-attachments/assets/c6fc5eb8-3df7-4c66-adc2-d56cd96d488f)
-
 
 ## 🧑‍💻 Getting Started
 
