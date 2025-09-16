@@ -1,5 +1,5 @@
 import { AI_Prompt, SelectBudgetOptions, SelectTravelList } from '@/constants/options';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import main from '@/Service/AIModel';
@@ -20,21 +20,22 @@ import Footer from '@/components/custom/footer';
 
 const Plantrip = () => {
   const [place, setPlace] = useState("");
-  const [formData, setformData] = useState([]);
+  const [formData, setFormData] = useState({}); // ✅ should be object, not []
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleinputChange = (name, e) => {
-    setformData({
+  const handleInputChange = (name, value) => {
+    setFormData({
       ...formData,
-      [name]: e,
+      [name]: value,
     });
   };
 
   const login = useGoogleLogin({
     onSuccess: codeResponse => GetUserProfile(codeResponse),
+    onError: () => toast("Google login failed!"),
   });
 
   const OnGenerateTrip = async () => {
@@ -63,26 +64,52 @@ const Plantrip = () => {
       .replace("{People}", formData?.people)
       .replace("{Duration}", formData?.duration);
 
-    const result = await main(Final_AI_Prompt);
-    setLoading(false);
-    SaveAITrip(JSON.parse(result));
+    try {
+      const result = await main(Final_AI_Prompt);
+      console.log("AI Response Object:", result);
+
+      setLoading(false);
+
+      if (result?.error) {
+        console.error("Error from AI Service:", result.error);
+        toast("Something went wrong with the AI response. Please try again!");
+        return;
+      }
+
+      SaveAITrip(result);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error generating trip:", error);
+      toast("Something went wrong. Please try again!");
+    }
   };
 
   const SaveAITrip = async (TripData) => {
     const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      toast("User not found, please log in again.");
+      setOpenDialog(true);
+      return;
+    }
+
     const docid = Date.now().toString();
 
     setLoading(true);
-
-    await setDoc(doc(db, "Trips", docid), {
-      userSelection: formData,
-      tripdata: TripData,
-      userEmail: user?.email,
-      id: docid,
-    });
-
-    setLoading(false);
-    navigate(`/view-trip/${docid}`);
+    try {
+      await setDoc(doc(db, "Trips", docid), {
+        userSelection: formData,
+        tripdata: TripData,
+        userEmail: user?.email,
+        id: docid,
+      });
+      toast("Trip saved successfully!");
+      navigate(`/view-trip/${docid}`);
+    } catch (err) {
+      console.error("Error saving trip:", err);
+      toast("Failed to save trip. Check Firestore rules!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const GetUserProfile = async (tokeninfo) => {
@@ -98,18 +125,15 @@ const Plantrip = () => {
       );
 
       const userData = response.data;
-
-      // ✅ LocalStorage me save
       localStorage.setItem('user', JSON.stringify(userData));
 
-      // ✅ Firestore me save/update (Users collection)
       await setDoc(doc(db, "Users", userData.sub), {
         name: userData.name,
         email: userData.email,
         picture: userData.picture,
         verified_email: userData.email_verified,
         createdAt: new Date().toISOString(),
-      }, { merge: true });  // merge=true => overwrite nahi karega, update karega
+      }, { merge: true });
 
       setOpenDialog(false);
       toast("Logged in successfully !");
@@ -137,7 +161,7 @@ const Plantrip = () => {
             type="text"
             className='border border-gray-500 font-medium p-2 rounded-md w-1/2'
             placeholder='Enter a destination...'
-            onChange={(e) => { setPlace(e.target.value); handleinputChange('location', e.target.value) }}
+            onChange={(e) => { setPlace(e.target.value); handleInputChange('location', e.target.value) }}
             value={place}
           />
         </div>
@@ -147,7 +171,7 @@ const Plantrip = () => {
           <h2 className='text-xl font-medium my-4'>How many days are you planning your trip?</h2>
           <input
             type="number"
-            onChange={(e) => handleinputChange('duration', e.target.value)}
+            onChange={(e) => handleInputChange('duration', e.target.value)}
             className='border border-gray-500 font-medium p-2 rounded-md w-1/2'
             placeholder='{Ex.3}'
           />
@@ -160,7 +184,7 @@ const Plantrip = () => {
             {SelectBudgetOptions.map((item, index) => (
               <div
                 key={index}
-                onClick={() => handleinputChange('budget', item.title)}
+                onClick={() => handleInputChange('budget', item.title)}
                 className={`p-4 border rounded-2xl hover:shadow-lg transition-all duration-300 cursor-pointer
                 ${formData.budget === item.title ? 'bg-gray-200 shadow-xl' : ''}`}
               >
@@ -179,7 +203,7 @@ const Plantrip = () => {
             {SelectTravelList.map((item, index) => (
               <div
                 key={index}
-                onClick={() => handleinputChange('people', item.people)}
+                onClick={() => handleInputChange('people', item.people)}
                 className={`p-4 border rounded-2xl hover:shadow-lg transition-all duration-300 cursor-pointer
                 ${formData.people === item.people ? 'bg-gray-200 shadow-xl' : ''}`}
               >

@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore"; // db ke liye
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -14,7 +14,18 @@ const firebaseConfig = {
 
 // Firebase initialize
 export const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
 
-// ✅ Firestore database export
+// ✅ Firestore export
 export const db = getFirestore(app);
+
+// ✅ Analytics ko safe tarike se initialize karo
+let analytics;
+if (typeof window !== "undefined") {
+  isSupported().then((yes) => {
+    if (yes) {
+      analytics = getAnalytics(app);
+    }
+  });
+}
+
+export { analytics };

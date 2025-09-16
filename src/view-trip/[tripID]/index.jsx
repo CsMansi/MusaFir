@@ -11,42 +11,45 @@ import Footer from '../../components/custom/footer';
 const viewtrip = () => {
 
     const {tripID} = useParams();
-    const [trip, settrip] = useState([]);
-
+    const [trip, settrip] = useState(null); 
 
     useEffect(() => {
-      tripID && GetTripData();
+        tripID && GetTripData();
+    }, [tripID]);
     
-    }, [tripID])
-    
-    const GetTripData=async ()=>{
-      const docRef=doc(db, "Trips", tripID);
-      const docSnap = await getDoc(docRef);
+    const GetTripData = async () => {
+        const docRef = doc(db, "Trips", tripID);
+        const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
-        // console.log("Document data:", docSnap.data());
-        settrip(docSnap.data());
-      }
-      else {
-        console.log("No such document!");
-        toast.error("No such trip found!");
-      }
+        if (docSnap.exists()) {
+            settrip(docSnap.data());
+        } else {
+            console.log("No such document!");
+            toast.error("No such trip found!");
+        }
+    };
+
+    if (!trip) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-xl">Loading your trip...</div>
+            </div>
+        );
     }
-  return (
-    <div className='p-10 md:px-20 lg:px-44 xl:px-56'>
-      {/* Information section */}
-        <InfoSec  trip={trip} />
 
-      {/* Recommended Hotels */}
-      <Hotels trip={trip} />
+    // ✅ YAHAN CODE KO SACHA KIYA GAYA HAI
+    // Since our new prompt is very strict, we can rely on a consistent data structure.
+    const hotels = trip?.tripdata?.travelPlan?.hotels || [];
+    const itinerary = trip?.tripdata?.travelPlan?.itinerary || {};
 
-      {/* Daily Plan */}
-      <Itinerary trip={trip} />
-      {/* Footer */}
-      <Footer />
-
-    </div>
-  )
+    return (
+        <div className='p-10 md:px-20 lg:px-44 xl:px-56'>
+            <InfoSec trip={trip} />
+            <Hotels hotelList={hotels} />
+            <Itinerary itineraryData={itinerary} />
+            <Footer />
+        </div>
+    )
 }
 
-export default viewtrip
+export default viewtrip;

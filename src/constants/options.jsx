@@ -1,35 +1,35 @@
-export const SelectTravelList=[
+export const SelectTravelList = [
     {
-        id:1,
-        title:"just me",
-        desc:"A solo traveler in exploration",
+        id: 1,
+        title: "Just me",
+        desc: "A solo traveler in exploration",
         icon: '🎧',
-        people:"1"
+        people: "1"
     },
     {
-        id:2,
-        title:"A Couple",
-        desc:"Two Travelers in tandem",
+        id: 2,
+        title: "A Couple",
+        desc: "Two Travelers in tandem",
         icon: '🥂',
-        people:"2 People"
+        people: "2 People"
     },
     {
-        id:3,
-        title:"Family",
-        desc:"A group fun loving family",
+        id: 3,
+        title: "Family",
+        desc: "A group fun loving family",
         icon: '🏡',
-        people:"3 to 5 people"
+        people: "3 to 5 people"
     },
     {
-        id:4,
-        title:"Friends",
-        desc:"A bunch of thrill-seekers",
+        id: 4,
+        title: "Friends",
+        desc: "A bunch of thrill-seekers",
         icon: '⛴️',
-        people:"5 to 10 people"
+        people: "5 to 10 people"
     },
 ]
 
-export const SelectBudgetOptions=[
+export const SelectBudgetOptions = [
     {
         id: 1,
         title: "Budget",
@@ -50,4 +50,74 @@ export const SelectBudgetOptions=[
     }
 ]
 
-export const AI_Prompt= "Generate a Travel Plan for Location: {Location} for {Duration} days for {People} with a {Budget} budget, Give me a hotel options list with HotelName, HotelAddress, Price, HotelImageURL, GeoCoordinates, rating, description (atleast 4 hotels) and suggest itinerary with PlaceName, PlaceDetails, PlaceImageURL, GeoCoordinates, TicketPricing, BestTime each of the location for {Duration} days with each day under a Plan object as Activities in a structured and valid JSON format do not change the terms as mentioned above."
+// Inside src/constants/options.jsx
+
+export const AI_Prompt = `
+Generate a travel plan for a location based on the user's input.
+The user's request is for a trip to {Location} for {Duration} days, with a {Budget} budget for {People} people.
+
+IMPORTANT INSTRUCTIONS:
+1.  You MUST respond with only a valid JSON object.
+2.  Do NOT include any text, notes, or explanations outside of the JSON object.
+3.  Do NOT use Markdown formatting (like \`\`\`json).
+4.  All keys and string values in the JSON must be enclosed in double quotes ("").
+5.  Ensure there are no trailing commas or comments.
+6.  The final JSON structure MUST follow this exact schema:
+
+{
+  "travelPlan": {
+    "location": "The name of the location",
+    "duration": "The number of days",
+    "budget": "The budget type",
+    // ✅ NEW INSTRUCTION & EXAMPLE ADDED HERE
+    "hotels": [ // Provide at least 4 different hotel options in this array.
+      {
+        "HotelName": "First Hotel Name",
+        "HotelAddress": "Address of the hotel",
+        "Price": "Price range per night",
+        "HotelImageURL": "A valid, placeholder image URL like https://example.com/image.jpg",
+        "GeoCoordinates": {
+          "latitude": 12.3456,
+          "longitude": 78.9101
+        },
+        "rating": 4.2,
+        "description": "A brief description of the hotel."
+      },
+      {
+        "HotelName": "Second Hotel Name",
+        "HotelAddress": "Address of the hotel",
+        "Price": "Price range per night",
+        "HotelImageURL": "A valid, placeholder image URL like https://example.com/image.jpg",
+        "GeoCoordinates": {
+          "latitude": 12.3456,
+          "longitude": 78.9101
+        },
+        "rating": 4.2,
+        "description": "A brief description of the hotel."
+      }
+    ],
+    "itinerary": {
+      "Plan1": {
+        "Day": "Day 1",
+        "Activities": [ // For each day, provide an optimized plan with 3 to 4 activities that are geographically close to each other.
+          {
+            "PlaceName": "Name of the place",
+            "PlaceDetails": "A brief description of the place/activity.",
+            "PlaceImageURL": "A valid, placeholder image URL like https://example.com/place.jpg",
+            "GeoCoordinates": {
+              "latitude": 12.3456,
+              "longitude": 78.9101
+            },
+            "TicketPricing": "Ticket price or 'Free'",
+            "BestTime": "Best time to visit"
+          }
+        ]
+      },
+      "Plan2": {
+        "Day": "Day 2",
+        "Activities": []
+      }
+    }
+  }
+}
+`;
