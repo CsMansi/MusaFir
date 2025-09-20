@@ -1,100 +1,159 @@
-import React, { useEffect, useState } from 'react'
-import { Button } from '../ui/Button.jsx'
+import React, { useEffect, useState } from 'react';
+import { Button } from '../ui/Button.jsx';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { googleLogout } from '@react-oauth/google';
-import { useGoogleLogin } from '@react-oauth/google';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+// ===== NEW IMPORTS =====
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { FcGoogle } from "react-icons/fc";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { LayoutList, LogOut, PlusCircle } from 'lucide-react'; 
+// ===== END OF NEW IMPORTS =====
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import { FcGoogle } from "react-icons/fc";
+import { toast } from 'sonner';
+
 const Navbar = () => {
+  const [user, setUser] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
 
-  const user = JSON.parse(localStorage.getItem('user'));
-  const [openDialog, setOpenDialog] = useState(false);
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
-  useEffect(() => {
-    // console.log(user);
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => GetUserProfile(codeResponse),
+    onError: (error) => console.log('Login Failed:', error)
+  });
 
-  })
+  const GetUserProfile = (tokenInfo) => {
+    axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokenInfo.access_token}`, {
+      headers: {
+        Authorization: `Bearer ${tokenInfo.access_token}`,
+        Accept: 'application/json'
+      }
+    }).then((response) => {
+      const userData = response.data;
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+      setOpenDialog(false);
+      toast.success("Logged in successfully!");
+    }).catch(err => console.error(err));
+  };
 
-  const login = useGoogleLogin({
-    onSuccess: codeResponse => GetUserProfile(codeResponse),
-  });
+  const handleLogout = () => {
+    googleLogout();
+    localStorage.removeItem('user');
+    setUser(null);
+    toast.info("You have been logged out.");
+  };
 
-  const GetUserProfile = (tokeninfo) => {
-    axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokeninfo?.access_token}`, {
-      headers: {
-        Authorization: `Bearer ${tokeninfo?.access_token}`,
-        Accept: 'application/json'
-      }
-    }).then((response) => {
-      localStorage.setItem('user', JSON.stringify(response.data));
-      setOpenDialog(false);
-      window.location.reload();
-      toast("Logged in successfully !");
+  return (
+    // ===== DESIGN UPDATE: Added sticky positioning and glassmorphism effect =====
+    <header className='sticky top-0 z-50 flex justify-between items-center px-4 md:px-8 py-3 border-b shadow-sm bg-white/95 backdrop-blur-lg'>
+      <a href="/" className='flex items-center gap-3'>
+        <img 
+          className='w-30 h-20 ml-9' 
+          src="/Logo1.png"
+          alt=" " 
+        />
+        
+      </a>
 
-    })
-  }
+      <nav>
+        {user ? (
+          <div className='flex items-center gap-3'>
+            {/* ===== DESIGN UPDATE: Changed buttons to cleaner "ghost" links ===== */}
+            <a href="/plan-trip">
+              <Button variant="ghost" className="rounded-full cursor-pointer hidden md:flex items-center gap-2">
+                <PlusCircle className='h-5 w-5' /> Create Trip
+              </Button>
+            </a>
+            <a href="/my-trips">
+              <Button variant="ghost" className="rounded-full cursor-pointer hidden md:block" >My Trips</Button>
+            </a>
+            
+            {/* ===== DESIGN UPDATE: Replaced Popover with a more suitable DropdownMenu ===== */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <img 
+                  src={user.picture} 
+                  alt={user.name}
+                  className='h-10 w-10 rounded-full cursor-pointer ring-2 ring-transparent hover:ring-primary ring-offset-2 transition-all' 
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 mr-4" align="end">
+                <DropdownMenuLabel>
+                    <h3 className='font-bold'>{user.name}</h3>
+                    <p className='text-sm text-gray-500 font-normal'>{user.email}</p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {/* Mobile-only links */}
+                <a href="/plan-trip" className='md:hidden'>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <PlusCircle className='h-4 w-4 mr-2' />
+                    Create Trip
+                  </DropdownMenuItem>
+                </a>
+                <a href="/my-trips" className='md:hidden'>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <LayoutList className='h-4 w-4 mr-2' />
+                    My Trips
+                  </DropdownMenuItem>
+                </a>
+                <DropdownMenuSeparator className='md:hidden' />
+                <DropdownMenuItem 
+                  className='cursor-pointer focus:bg-red-50 focus:text-red-600'
+                  onClick={handleLogout}
+                >
+                  <LogOut className='h-4 w-4 mr-2' />
+                    Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : (
+          <Button className="cursor-pointer rounded-full" onClick={() => setOpenDialog(true)}>
+            Sign In
+          </Button>
+        )}
+      </nav>
 
-  return (
-    <div className='flex justify-between items-center bg-white shadow-lg p-3'>
-      <div className='flex flex-col items-center'>
-        <img className='w-40' src="/TriPLAN-logo.svg" alt="Trip Planner Logo" />
-        <span>Your Trip Companion</span>
-      </div>
-      <div>
-        {
-          user ?
-            <div className='flex items-center gap-3'>
-              <a href="/plan-trip">
-                <Button variant="outline" className="rounded-full cursor-pointer" >+ Create Trip</Button>
-              </a>
-              <a href="/My-trips">
-                <Button variant="outline" className="rounded-full cursor-pointer" >My Trips</Button>
-              </a>
-              <Popover>
-                <PopoverTrigger>
-                  <img src={user?.picture} className='h-[35px] w-[35px] rounded-full cursor-pointer' />
-                </PopoverTrigger>
-                <PopoverContent>
-                  <a href="/"><h2 className='cursor-pointer' onClick={() => {
-                    googleLogout();
-                    localStorage.clear();
-                    window.location.reload();
-                  }}>Logout.</h2></a>
-                </PopoverContent>
-              </Popover>
-            </div>
-            :
-            <Button className="cursor-pointer" onClick={() => setOpenDialog(true)}>Sign In</Button>
-        }
-      </div>
-      <Dialog open={openDialog}>
+      {/* The Dialog for login remains functionally the same */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader className="flex flex-col items-center text-center p-4">
+            <img width="90px" src="/MusaFir-symbol.png" alt="MusaFir Logo" />
+            <DialogTitle 
+              className='text-3xl font-bold mt-4' 
+              style={{ fontFamily: "'Poppins', sans-serif" }}
+            >
+              Welcome to MusaFir
+            </DialogTitle>
+            <DialogDescription>
+              Sign in securely to start planning your next adventure.
+            </DialogDescription>
+            <Button onClick={() => login()} className="w-full mt-5 flex items-center justify-center gap-2 cursor-pointer h-11">
+              <FcGoogle className='w-6 h-6' /> Sign In With Google
+            </Button>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </header>
+  );
+};
 
-        <DialogContent>
-          <DialogHeader>
-            <DialogDescription>
-              <img width="150px" src="/TriPLAN-logo.svg" alt="" />
-              <h2 className='text-grey font-bold text-lg mt-6 mb-1'>Sign In With Google</h2>
-              <h2>Sign to the App with Google authentication securely</h2>
-              <Button onClick={login} className="w-full mt-5 cursor-pointer flex items-center" > <FcGoogle className='w-7 mr-2' /> Sign In With Google</Button>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-
-    </div>
-  )
-}
-
-export default Navbar
+export default Navbar;
