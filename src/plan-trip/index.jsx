@@ -145,12 +145,12 @@ const Plantrip = () => {
   };
 
   return (
-    <div className='sm:px-10 md:px-15 lg:px-20 xl:px-25 px-5 mt-10'>
-      <h1 className='font-bold text-3xl'>
-        Tell Us About <span className='text-[#FF5050] text-shadow-md'>Your</span> Trip ⛰️🏖️
+    <div className='sm:px-10 md:px-15 lg:px-20 xl:px-25 px-5 mt-10 '>
+      <h1 className='font-bold text-3xl ml-100'>
+        A Call to the <span className='text-[#5D2A2A] text-shadow-md'>MusaFir</span> Within 🌄
       </h1>
-      <p className='m-5 text-gray-700 text-xl'>
-        Help us create the perfect itinerary for you! Fill in the details below about your travel plans and preferences.
+      <p className='m-5 text-white-700 text-xl ml-70'>
+        Every traveler's journey begins with a single destination. Tell us: where is your heart calling you?
       </p>
 
       <div>
