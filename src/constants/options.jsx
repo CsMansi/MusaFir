@@ -2,29 +2,29 @@ export const SelectTravelList = [
     {
         id: 1,
         title: "Just me",
-        desc: "A solo traveler in exploration",
+        desc: "Sirf main, mera backpack, aur ek naya raasta.",
         icon: '🎧',
         people: "1"
     },
     {
         id: 2,
         title: "A Couple",
-        desc: "Two Travelers in tandem",
-        icon: '🥂',
+        desc: "Har pal ko khaas banayein, apne humsafar ke saath.",
+        icon: '👥',
         people: "2 People"
     },
     {
         id: 3,
         title: "Family",
-        desc: "A group fun loving family",
+        desc: "Ek aisi family trip, jiske kisse hamesha yaad rahenge.",
         icon: '🏡',
         people: "3 to 5 people"
     },
     {
         id: 4,
         title: "Friends",
-        desc: "A bunch of thrill-seekers",
-        icon: '⛴️',
+        desc: "Trip, jo sirf group chat tak nahi rehta.",
+        icon: '🧑‍🤝‍🧑',
         people: "5 to 10 people"
     },
 ]
@@ -33,7 +33,7 @@ export const SelectBudgetOptions = [
     {
         id: 1,
         title: "Budget",
-        desc: "Affordable options for budget-conscious travelers",
+        desc: "Essential and affordable options for the conscious traveler.",
         icon: '💵',
     },
     {

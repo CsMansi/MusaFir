@@ -146,17 +146,17 @@ const Plantrip = () => {
 
   return (
     <div className='sm:px-10 md:px-15 lg:px-20 xl:px-25 px-5 mt-10 '>
-      <h1 className='font-bold text-3xl ml-100'>
+      <h1 className='font-bold text-3xl text-center my-12'>
         A Call to the <span className='text-[#5D2A2A] text-shadow-md'>MusaFir</span> Within 🌄
       </h1>
-      <p className='m-5 text-white-700 text-xl ml-70'>
+      <p className='m-5 text-white-700 text-xl text-center my-12'>
         Every traveler's journey begins with a single destination. Tell us: where is your heart calling you?
       </p>
 
       <div>
         {/* Destination */}
         <div className='mt-10'>
-          <h2 className='text-xl font-medium  my-4'>Where do you want to go?</h2>
+          <h2 className='text-xl font-medium  my-4'>Enter Your Destination 📍</h2>
           <input
             type="text"
             className='border border-gray-500 font-medium p-2 rounded-md w-1/2'
@@ -168,7 +168,7 @@ const Plantrip = () => {
 
         {/* Duration */}
         <div className='mt-5'>
-          <h2 className='text-xl font-medium my-4'>How many days are you planning your trip?</h2>
+          <h2 className='text-xl font-medium my-4'>Number of Days for Your Trip 📅</h2>
           <input
             type="number"
             onChange={(e) => handleInputChange('duration', e.target.value)}
@@ -179,7 +179,7 @@ const Plantrip = () => {
 
         {/* Budget */}
         <div className='mt-5'>
-          <h2 className='text-xl font-medium my-4'>What is your Budget?</h2>
+          <h2 className='text-xl font-medium my-4'>Select Your Budget Range ✨</h2>
           <div className="grid grid-cols-3 gap-5 mt-5 max-w-5xl">
             {SelectBudgetOptions.map((item, index) => (
               <div
@@ -190,7 +190,7 @@ const Plantrip = () => {
               >
                 <h2 className='text-3xl '>{item.icon}</h2>
                 <h2 className='font-bold text-lg'>{item.title}</h2>
-                <h2 className='text-sm text-gray-600'>{item.desc}</h2>
+                <h2 className='text-sm text-white-300'>{item.desc}</h2>
               </div>
             ))}
           </div>
@@ -198,7 +198,7 @@ const Plantrip = () => {
 
         {/* Travel Partners */}
         <div className='mt-5'>
-          <h2 className='text-xl font-medium my-4'>Who do you plan on travelling with on your next adventure?</h2>
+          <h2 className='text-xl font-medium my-4'>Who's traveling with you?</h2>
           <div className="grid grid-cols-3 gap-5 mt-5 max-w-5xl">
             {SelectTravelList.map((item, index) => (
               <div
@@ -209,7 +209,7 @@ const Plantrip = () => {
               >
                 <h2 className='text-3xl '>{item.icon}</h2>
                 <h2 className='font-bold text-lg'>{item.title}</h2>
-                <h2 className='text-sm text-gray-600'>{item.desc}</h2>
+                <h2 className='text-sm text-white-600'>{item.desc}</h2>
               </div>
             ))}
           </div>
