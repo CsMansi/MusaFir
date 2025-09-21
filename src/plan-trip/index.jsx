@@ -147,7 +147,7 @@ const Plantrip = () => {
             <input
               type="text"
               className='p-2 border rounded-md w-full'
-              placeholder='Where to next? e.g., Kyoto, Japan'
+              placeholder='Where to next? e.g., Uttarakhand'
               onChange={(e) => handleInputChange('location', e.target.value)}
             />
           </div>
@@ -204,10 +204,19 @@ const Plantrip = () => {
 
         {/* UPDATE: Centered and more prominent Generate Trip Button */}
         <div className='my-10 text-center'>
-          <Button disabled={loading} onClick={OnGenerateTrip} className="text-lg h-12 px-8 bg-[#5D2A2A] hover:bg-[#4a2222]">
-            {loading ? <AiOutlineLoading3Quarters className="h-6 w-6 animate-spin" /> : "Craft My Journey"}
-          </Button>
-        </div>
+  <Button
+    disabled={loading}
+    onClick={OnGenerateTrip}
+    className="cursor-pointer bg-gradient-to-r from-[#8a4a4a] to-[#5D2A2A] text-white text-lg h-12 px-8 rounded-full shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300"
+  >
+    {loading ? (
+      <AiOutlineLoading3Quarters className="h-6 w-6 animate-spin" />
+    ) : (
+      "Craft My Journey ✈️"
+    )}
+  </Button>
+</div>
+
       </div>
 
       {/* UPDATE: Refined Login Dialog */}
@@ -226,7 +235,6 @@ const Plantrip = () => {
         </DialogContent>
       </Dialog>
       
-      <Footer />
     </div>
   );
 };

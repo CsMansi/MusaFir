@@ -25,31 +25,29 @@ const MyTrips = () => {
         const q = query(collection(db, "Trips"), where('userEmail', '==', user?.email))
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-            // console.log(doc.id, "=>", doc.data());
             setUserTrips(prevVal => [...prevVal, doc.data()])
-
         })
     }
 
     return (
         <div className='sm:px-10 md:px-15 lg:px-20 xl:px-25 px-5 mt-10'>
-            <h2 className='font-bold text-3xl'>My Trips</h2>
+            {/* Updated Heading */}
+            <h2 className='font-extrabold text-4xl text-center'>
+                My <span className="text-[#5D2A2A]">Trips</span>
+            </h2>
 
             <div className='mt-10 grid grid-cols-3 md:grid-cols-6 gap-5'>
-                {UserTrips?.length>0?UserTrips.map((trip, index) => {
-                    return(
+                {UserTrips?.length > 0 ? UserTrips.map((trip, index) => {
+                    return (
                         <UserTripItemCard trip={trip} key={index} />
                     )
                 })
-            :[1,2,3,4,5,6,7,8,9,10,11,12].map((item,index)=>{
-                return (<div key={index} className='h-[300px] w-full bg-slate-200 animate-pulse rounded-2xl'>
-
-                </div>)
-            })
-            }
+                    : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item, index) => {
+                        return (<div key={index} className='h-[300px] w-full bg-slate-200 animate-pulse rounded-2xl'>
+                        </div>)
+                    })
+                }
             </div>
-            <Footer/>
-
         </div>
     )
 }
