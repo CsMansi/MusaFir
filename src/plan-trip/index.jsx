@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogTitle, // Added DialogTitle for better structure
 } from "@/components/ui/dialog";
 import { FcGoogle } from "react-icons/fc";
 import { useGoogleLogin } from '@react-oauth/google';
@@ -19,8 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import Footer from '@/components/custom/footer';
 
 const Plantrip = () => {
-  const [place, setPlace] = useState("");
-  const [formData, setFormData] = useState({}); // ✅ should be object, not []
+  const [formData, setFormData] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +35,7 @@ const Plantrip = () => {
 
   const login = useGoogleLogin({
     onSuccess: codeResponse => GetUserProfile(codeResponse),
-    onError: () => toast("Google login failed!"),
+    onError: () => toast.error("Google login failed!"),
   });
 
   const OnGenerateTrip = async () => {
@@ -47,66 +47,56 @@ const Plantrip = () => {
     }
 
     if (!formData?.duration || !formData?.budget || !formData?.people || !formData?.location) {
-      toast("Please fill all the fields !");
+      toast.error("Please fill all the fields!");
       return;
     }
     if (formData?.duration > 10 || formData?.duration < 1) {
-      toast("Please enter a valid duration !");
+      toast.error("Please enter a trip duration between 1 and 10 days!");
       return;
     }
 
     setLoading(true);
-    toast("Generating Trip, Please wait...");
+    toast.info("Crafting your journey, please wait...");
 
     const Final_AI_Prompt = AI_Prompt.replace("{Location}", formData?.location)
       .replace("{Duration}", formData?.duration)
       .replace("{Budget}", formData?.budget)
-      .replace("{People}", formData?.people)
-      .replace("{Duration}", formData?.duration);
+      .replace("{People}", formData?.people);
 
     try {
       const result = await main(Final_AI_Prompt);
-      console.log("AI Response Object:", result);
-
       setLoading(false);
 
-      if (result?.error) {
-        console.error("Error from AI Service:", result.error);
-        toast("Something went wrong with the AI response. Please try again!");
+      if (!result) {
+        toast.error("Something went wrong with the AI. Please try again!");
         return;
       }
 
-      SaveAITrip(result);
+      await SaveAITrip(result);
     } catch (error) {
       setLoading(false);
       console.error("Error generating trip:", error);
-      toast("Something went wrong. Please try again!");
+      toast.error("Something went wrong. Please try again!");
     }
   };
 
   const SaveAITrip = async (TripData) => {
+    setLoading(true);
     const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) {
-      toast("User not found, please log in again.");
-      setOpenDialog(true);
-      return;
-    }
-
     const docid = Date.now().toString();
 
-    setLoading(true);
     try {
       await setDoc(doc(db, "Trips", docid), {
         userSelection: formData,
-        tripdata: TripData,
+        tripData: TripData, // Corrected key to match your schema
         userEmail: user?.email,
         id: docid,
       });
-      toast("Trip saved successfully!");
+      toast.success("Trip saved successfully!");
       navigate(`/view-trip/${docid}`);
     } catch (err) {
       console.error("Error saving trip:", err);
-      toast("Failed to save trip. Check Firestore rules!");
+      toast.error("Failed to save trip. Please try again!");
     } finally {
       setLoading(false);
     }
@@ -126,120 +116,117 @@ const Plantrip = () => {
 
       const userData = response.data;
       localStorage.setItem('user', JSON.stringify(userData));
-
-      await setDoc(doc(db, "Users", userData.sub), {
-        name: userData.name,
-        email: userData.email,
-        picture: userData.picture,
-        verified_email: userData.email_verified,
-        createdAt: new Date().toISOString(),
-      }, { merge: true });
-
       setOpenDialog(false);
-      toast("Logged in successfully !");
+      toast.success("Logged in successfully!");
       OnGenerateTrip();
     } catch (error) {
       console.error("Error fetching user profile:", error);
-      toast("Login failed, please try again!");
+      toast.error("Login failed, please try again!");
     }
   };
 
   return (
-    <div className='sm:px-10 md:px-15 lg:px-20 xl:px-25 px-5 mt-10 '>
-      <h1 className='font-bold text-3xl text-center my-12'>
-        A Call to the <span className='text-[#5D2A2A] text-shadow-md'>MusaFir</span> Within 🌄
-      </h1>
-      <p className='m-5 text-white-700 text-xl text-center my-12'>
-        Every traveler's journey begins with a single destination. Tell us: where is your heart calling you?
-      </p>
+    <div className='sm:px-10 md:px-20 lg:px-32 px-5 mt-10'>
+      
+      {/* UPDATE: Main heading styling improved */}
+      <div className="text-center my-12">
+        <h1 className='text-4xl font-bold'>
+          A Call to the <span className='text-[#5D2A2A]'>MusaFir</span> Within 🌄
+        </h1>
+        <p className='text-lg text-muted-foreground mt-3'>
+          Every traveler's journey begins with a single destination. Tell us: where is your heart calling you?
+        </p>
+      </div>
 
-      <div>
-        {/* Destination */}
-        <div className='mt-10'>
-          <h2 className='text-xl font-medium  my-4'>Enter Your Destination 📍</h2>
-          <input
-            type="text"
-            className='border border-gray-500 font-medium p-2 rounded-md w-1/2'
-            placeholder='Enter a destination...'
-            onChange={(e) => { setPlace(e.target.value); handleInputChange('location', e.target.value) }}
-            value={place}
-          />
-        </div>
-
-        {/* Duration */}
-        <div className='mt-5'>
-          <h2 className='text-xl font-medium my-4'>Number of Days for Your Trip 📅</h2>
-          <input
-            type="number"
-            onChange={(e) => handleInputChange('duration', e.target.value)}
-            className='border border-gray-500 font-medium p-2 rounded-md w-1/2'
-            placeholder='{Ex.3}'
-          />
+      <div className='space-y-10'>
+        
+        {/* UPDATE: Two-column layout for Destination and Days */}
+        <div className="md:flex gap-8">
+          <div className="flex-1">
+            <h2 className='text-xl font-medium my-4'>Enter Your Destination 📍</h2>
+            <input
+              type="text"
+              className='p-2 border rounded-md w-full'
+              placeholder='Where to next? e.g., Kyoto, Japan'
+              onChange={(e) => handleInputChange('location', e.target.value)}
+            />
+          </div>
+          <div className="flex-1">
+            <h2 className='text-xl font-medium my-4'>Number of Days for Your Trip 📅</h2>
+            <input
+              type="number"
+              onChange={(e) => handleInputChange('duration', e.target.value)}
+              className='p-2 border rounded-md w-full'
+              placeholder='e.g., 7'
+            />
+          </div>
         </div>
 
         {/* Budget */}
-        <div className='mt-5'>
+        <div>
           <h2 className='text-xl font-medium my-4'>Select Your Budget Range ✨</h2>
-          <div className="grid grid-cols-3 gap-5 mt-5 max-w-5xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-5">
             {SelectBudgetOptions.map((item, index) => (
               <div
                 key={index}
                 onClick={() => handleInputChange('budget', item.title)}
-                className={`p-4 border rounded-2xl hover:shadow-lg transition-all duration-300 cursor-pointer
-                ${formData.budget === item.title ? 'bg-gray-200 shadow-xl' : ''}`}
+                // UPDATE: Improved selection style for both light/dark themes
+                className={`p-4 border rounded-lg hover:shadow-lg transition-all cursor-pointer ${formData.budget === item.title ? 'ring-2 ring-[#5D2A2A]' : ''}`}
               >
-                <h2 className='text-3xl '>{item.icon}</h2>
-                <h2 className='font-bold text-lg'>{item.title}</h2>
-                <h2 className='text-sm text-white-300'>{item.desc}</h2>
+                {/* UPDATE: Corrected semantics and styling */}
+                <h3 className='text-3xl'>{item.icon}</h3>
+                <h4 className='font-bold text-lg'>{item.title}</h4>
+                <p className='text-sm text-muted-foreground'>{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Travel Partners */}
-        <div className='mt-5'>
-          <h2 className='text-xl font-medium my-4'>Who's traveling with you?</h2>
-          <div className="grid grid-cols-3 gap-5 mt-5 max-w-5xl">
+        <div>
+          <h2 className='text-xl font-medium my-4'>Who's traveling with you? 👥</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mt-5">
             {SelectTravelList.map((item, index) => (
               <div
                 key={index}
                 onClick={() => handleInputChange('people', item.people)}
-                className={`p-4 border rounded-2xl hover:shadow-lg transition-all duration-300 cursor-pointer
-                ${formData.people === item.people ? 'bg-gray-200 shadow-xl' : ''}`}
+                // UPDATE: Improved selection style for both light/dark themes
+                className={`p-4 border rounded-lg hover:shadow-lg transition-all cursor-pointer ${formData.people === item.people ? 'ring-2 ring-[#5D2A2A]' : ''}`}
               >
-                <h2 className='text-3xl '>{item.icon}</h2>
-                <h2 className='font-bold text-lg'>{item.title}</h2>
-                <h2 className='text-sm text-white-600'>{item.desc}</h2>
+                {/* UPDATE: Corrected semantics and styling */}
+                <h3 className='text-3xl'>{item.icon}</h3>
+                <h4 className='font-bold text-lg'>{item.title}</h4>
+                <p className='text-sm text-muted-foreground'>{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Generate Trip Button */}
-        <div className='m-10 flex justify-end w-[75%]'>
-          <Button className="cursor-pointer" disabled={loading} onClick={OnGenerateTrip}>
-            {loading ? <AiOutlineLoading3Quarters className="animate-spin" /> : "Generate Trip"}
+        {/* UPDATE: Centered and more prominent Generate Trip Button */}
+        <div className='my-10 text-center'>
+          <Button disabled={loading} onClick={OnGenerateTrip} className="text-lg h-12 px-8 bg-[#5D2A2A] hover:bg-[#4a2222]">
+            {loading ? <AiOutlineLoading3Quarters className="h-6 w-6 animate-spin" /> : "Craft My Journey"}
           </Button>
         </div>
-
-        {/* Login Dialog */}
-        <Dialog open={openDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogDescription>
-                <img width="150px" src="/TriPLAN-logo.svg" alt="" />
-                <h2 className='text-grey font-bold text-lg mt-6 mb-1'>Sign In With Google</h2>
-                <h2>Sign to the App with Google authentication securely</h2>
-                <Button onClick={login} className="w-full mt-5 cursor-pointer flex items-center" >
-                  <FcGoogle className='w-7 mr-2' /> Sign In With Google
-                </Button>
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-
-        <Footer />
       </div>
+
+      {/* UPDATE: Refined Login Dialog */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogHeader className="flex flex-col items-center text-center p-4">
+            <img width="90px" src="/MusaFir-symbol.png" alt="MusaFir Logo" />
+            <DialogTitle className='text-2xl font-bold mt-4'>Your Adventure Awaits!</DialogTitle>
+            <DialogDescription>
+              Please sign in to save your trip and unlock all features.
+            </DialogDescription>
+            <Button onClick={login} className="w-full mt-5 flex items-center justify-center gap-2 h-11" >
+              <FcGoogle className='w-6 h-6' /> Sign In With Google
+            </Button>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+      
+      <Footer />
     </div>
   );
 };

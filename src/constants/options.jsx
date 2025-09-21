@@ -1,3 +1,4 @@
+import { Wallet, Sparkles, Gem, User, Users2, Home, PartyPopper } from 'lucide-react';
 export const SelectTravelList = [
     {
         id: 1,
