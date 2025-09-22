@@ -1,32 +1,60 @@
-import React from 'react'
-import { Button } from '@/components/ui/Button'
+// src/view-trip/[tripID]/components/placecard.jsx
+
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import { FaMapLocationDot } from "react-icons/fa6";
-import { Link } from 'react-router-dom'
+import { getPhoto } from '@/service/pexelsService'; // Import the new service
 
 const Placecard = ({ place }) => {
+    // State to hold the image URL
+    const [imageUrl, setImageUrl] = useState('/placeholder.jpg');
+
+    useEffect(() => {
+        // This function runs when the component loads
+        const fetchImage = async () => {
+            // Use the Pexels service to get a real image
+            const photo = await getPhoto(place.PlaceName);
+            if (photo) {
+                setImageUrl(photo);
+            }
+        };
+        
+        fetchImage();
+    }, [place.PlaceName]); // Re-run if the place name changes
+
+    const createMapLink = () => {
+        const { latitude, longitude } = place.GeoCoordinates || {};
+        if (latitude && longitude) {
+            return `https://www.google.com/maps/search/?api=1&query=$,${latitude},${longitude}`;
+        }
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.PlaceName)}`;
+    };
+
     return (
-        <div className='border rounded-xl p-3 flex gap-5 hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out'>
-            
-            {/* ✅ Place ki asli image URL ka istemal kiya gaya */}
+        <div className='flex gap-4 border rounded-xl p-3 hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out h-full'>
             <img 
-                className='w-[130px] h-[130px] rounded-xl object-cover' 
-                src={place.PlaceImageURL?.includes('example.com') ? '/placeholder.jpg' : place.PlaceImageURL} 
+                className='w-[130px] h-full object-cover rounded-xl' 
+                src={imageUrl} // Use the state variable for the image source
                 alt={place.PlaceName} 
             />
-
-            <div className='flex flex-col gap-2'>
-                <h2 className='font-bold text-lg'>{place.PlaceName}</h2>
-                <p className='text-sm text-gray-500'>{place.PlaceDetails}</p>
-                <h2 className='text-sm font-medium'>💰 {place.TicketPricing}</h2>
-                <h2 className='text-sm font-medium'>🕒 {place.BestTime}</h2>
+            <div className='flex flex-col justify-between flex-1'>
+                <div className="flex flex-col gap-1">
+                    <h2 className='font-bold text-lg'>{place.PlaceName}</h2>
+                    <p className='text-sm text-gray-500'>{place.PlaceDetails}</p>
+                    <h3 className='text-sm font-medium mt-1'>💰 {place.TicketPricing}</h3>
+                    <h3 className='text-sm font-medium'>🕒 {place.BestTime}</h3>
+                </div>
+                <div className="mt-2">
+                    <a href={createMapLink()} target='_blank' rel="noopener noreferrer">
+                        <Button className='flex items-center gap-2 h-auto p-2'>
+                            <FaMapLocationDot />
+                            <span className="text-xs">View on Map</span>
+                        </Button>
+                    </a>
+                </div>
             </div>
-
-            {/* ✅ Google Maps ka link theek kiya gaya */}
-            <Link to={`https://www.google.com/maps/search/?api=1&query=${place.PlaceName}`} target='_blank' className="self-end">
-                <Button className='p-3 h-auto'><FaMapLocationDot /></Button>
-            </Link>
         </div>
-    )
+    );
 }
 
-export default Placecard
+export default Placecard;

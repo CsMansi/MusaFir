@@ -161,7 +161,7 @@ const Navbar = () => {
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent className="max-w-sm">
           <DialogHeader className="flex flex-col items-center text-center p-4">
-            <img width="90px" src="/MusaFir-symbol.png" alt="MusaFir Logo" />
+            <img width="90px" src="/Logo1.png" alt="MusaFir Logo" />
             <DialogTitle 
               className='text-3xl font-bold mt-4' 
               style={{ fontFamily: "'Poppins', sans-serif" }}

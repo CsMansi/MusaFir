@@ -1,3 +1,4 @@
+//src\Service\AIModel.jsx
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import JSON5 from 'json5'; // ✅ Nayi library import ki gayi
 

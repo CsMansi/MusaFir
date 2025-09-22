@@ -1,32 +1,57 @@
-import React from 'react'
-import { FaShare } from "react-icons/fa6";
-import { Button } from '@/components/ui/Button';
-import { WhatsappShareButton, } from "react-share";
+import React, { useState, useEffect } from 'react';
+import { WhatsappShareButton, WhatsappIcon } from "react-share";
 
 const InfoSec = ({ trip }) => {
+    const [shareUrl, setShareUrl] = useState('');
 
-    const currentpageURL = window.location.href;
+    useEffect(() => {
+        setShareUrl(window.location.href);
+    }, []);
+
+    const userSelection = trip?.userSelection;
+    const tripData = trip?.tripData;
+    const imageUrl = tripData?.itinerary?.Plan1?.Activities[0]?.PlaceImageURL || '/city.jpg';
+
+    if (!userSelection) {
+        return null;
+    }
+
     return (
         <div>
-            <img className='h-[340px] w-full object-cover rounded-xl' src="/city.jpg" alt={trip?.userSelection?.location} />
-            <div className='flex justify-between items-center '>
-                <div className='my-5 flex flex-col gap-2'>
-                    <h1 className='font-bold text-2xl'>{trip?.userSelection?.location}</h1>
-                    <div className='flex flex-wrap gap-2'>
-                        <h1 className='p-2 px-3 bg-gray-200 rounded-full font-medium'>📅 {trip?.userSelection?.duration} Days</h1>
-                        <h1 className='p-2 px-3 bg-gray-200 rounded-full font-medium'>💰 {trip?.userSelection?.budget} Budget</h1>
-                        <h1 className='p-2 px-3 bg-gray-200 rounded-full font-medium'>✈️ No of Travelers: {trip?.userSelection?.people} </h1>
+            <img 
+                className='h-[340px] w-full object-cover rounded-xl' 
+                src={imageUrl.includes('example.com') ? '/city.jpg' : imageUrl} 
+                alt={userSelection.location} 
+            />
+            
+            <div className='flex justify-between items-center my-5'>
+                <div className='flex flex-col gap-2'>
+                    <h1 className='font-bold text-2xl'>Your Trip to {userSelection.location}</h1>
+                    <div className='flex flex-wrap gap-3'>
+                        <h2 className='p-2 px-3 bg-gray-200 rounded-full text-sm sm:text-base'>
+                            📅 {userSelection.duration} Days
+                        </h2>
+                        <h2 className='p-2 px-3 bg-gray-200 rounded-full text-sm sm:text-base'>
+                            💰 {userSelection.budget} Budget
+                        </h2>
+                        <h2 className='p-2 px-3 bg-gray-200 rounded-full text-sm sm:text-base'>
+                            ✈️ Travelers: {userSelection.people}
+                        </h2>
                     </div>
                 </div>
 
-                <Button asChild className="cursor-pointer">
-                    <WhatsappShareButton url={currentpageURL}>
-                        <FaShare />
-                    </WhatsappShareButton>
-                </Button>
+                {/* FIX: Removed the extra <Button> wrapper to fix the console warning */}
+                <WhatsappShareButton
+                    url={shareUrl}
+                    title={`Check out my trip to ${userSelection.location}!`}
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                >
+                    <WhatsappIcon size={24} round />
+                    <span>Share</span>
+                </WhatsappShareButton>
             </div>
         </div>
     )
 }
 
-export default InfoSec
+export default InfoSec;
