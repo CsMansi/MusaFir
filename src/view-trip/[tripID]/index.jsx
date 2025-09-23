@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/service/firebaseConfig.jsx';
+import { db } from '@/Service/firebaseConfig.jsx';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
