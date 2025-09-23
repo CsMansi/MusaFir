@@ -10,7 +10,7 @@ const InfoSec = ({ trip }) => {
 
     const userSelection = trip?.userSelection;
     const tripData = trip?.tripData;
-    const imageUrl = tripData?.itinerary?.Plan1?.Activities[0]?.PlaceImageURL || '/city.jpg';
+    const imageUrl = tripData?.itinerary?.Plan1?.Activities[0]?.PlaceImageURL || '/city1.png';
 
     if (!userSelection) {
         return null;
@@ -28,13 +28,13 @@ const InfoSec = ({ trip }) => {
                 <div className='flex flex-col gap-2'>
                     <h1 className='font-bold text-2xl'>Your Trip to {userSelection.location}</h1>
                     <div className='flex flex-wrap gap-3'>
-                        <h2 className='p-2 px-3 bg-gray-200 rounded-full text-sm sm:text-base'>
+                        <h2 className='p-2 px-3 bg-gray-200 rounded-full text-black sm:text-base font-semibold'>
                             📅 {userSelection.duration} Days
                         </h2>
-                        <h2 className='p-2 px-3 bg-gray-200 rounded-full text-sm sm:text-base'>
+                        <h2 className='p-2 px-3 bg-gray-200 rounded-full text-black sm:text-base font-semibold'>
                             💰 {userSelection.budget} Budget
                         </h2>
-                        <h2 className='p-2 px-3 bg-gray-200 rounded-full text-sm sm:text-base'>
+                        <h2 className='p-2 px-3 bg-gray-200 rounded-full text-black sm:text-base font-semibold'>
                             ✈️ Travelers: {userSelection.people}
                         </h2>
                     </div>

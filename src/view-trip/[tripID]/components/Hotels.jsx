@@ -53,7 +53,7 @@ const Hotels = ({ hotelList }) => {
     }
     return (
         <div>
-            <h1 className='font-bold text-2xl mt-5'><span className='text-[#FF5050] text-shadow-md'>Hotel</span> Recommendations</h1>
+            <h1 className='font-bold text-2xl mt-5'><span className='text-[#5D2A2A] text-shadow-md'>Hotel</span> Recommendations</h1>
             <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 mt-5'>
                 {hotelList.map((hotel, index) => (
                     <HotelCard key={index} hotel={hotel} />

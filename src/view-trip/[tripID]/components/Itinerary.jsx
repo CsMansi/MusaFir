@@ -18,7 +18,7 @@ const Itinerary = ({ itinerary }) => {
 
           return (
             <div key={index} className="border-b-2 border-gray-200 pb-6">
-              <h3 className='font-bold text-xl text-blue-700 mb-4'>
+              <h3 className='font-bold text-xl mb-4'>
                 {dayPlan.Day || `Day ${index + 1}`}
               </h3>
               <div className='grid md:grid-cols-2 gap-5'>
