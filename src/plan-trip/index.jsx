@@ -17,7 +17,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/Service/firebaseConfig';
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useNavigate } from 'react-router-dom';
-import Footer from '@/components/custom/footer';
+import Footer from '@/components/custom/Footer';
 
 const Plantrip = () => {
   const [formData, setFormData] = useState({});

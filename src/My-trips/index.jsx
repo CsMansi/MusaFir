@@ -3,7 +3,7 @@ import UserTripItemCard from './components/UserTripItemCard';
 import { collection, doc, getDocs, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from 'react-router-dom';
-import Footer from '@/components/custom/footer';
+import Footer from '@/components/custom/Footer';
 
 const MyTrips = () => {
 
