@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Star } from 'lucide-react';
-import { getPhoto } from '@/service/pexelsService'; // Import the new service
+import { getPhoto } from '@/Service/pexelsService'; // Import the new service
 
 // A new component for each hotel card to manage its own image
 const HotelCard = ({ hotel }) => {
