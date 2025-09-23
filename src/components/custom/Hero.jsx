@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button.jsx';
 // FIX: Corrected the typo in the import path
 import { Link } from 'react-router-dom';
 
@@ -26,7 +26,7 @@ const Hero = () => {
           <Link to="/plan-trip" className="mt-10">
             <Button className="cursor-pointer bg-gradient-to-r from-[#8a4a4a] to-[#5D2A2A] text-white text-lg h-14 px-8 rounded-full shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300">
               Plan Your Trip &gt;
-            </Button>
+            </Button>  
           </Link>
         </div>
       </div>
