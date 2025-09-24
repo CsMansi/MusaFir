@@ -223,7 +223,7 @@ const Plantrip = () => {
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
           <DialogHeader className="flex flex-col items-center text-center p-4">
-            <img width="90px" src="/MusaFir-symbol.png" alt="MusaFir Logo" />
+            <img width="90px" src="/Logo1.png" alt="MusaFir Logo" />
             <DialogTitle className='text-2xl font-bold mt-4'>Your Adventure Awaits!</DialogTitle>
             <DialogDescription>
               Please sign in to save your trip and unlock all features.
