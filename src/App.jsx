@@ -7,7 +7,6 @@ import { Outlet } from 'react-router-dom';
 
 function App() {
   return (
-    // YEH CLASS 'bg-background' POORI SITE KA BACKGROUND THEME KE ANUSAAR SET KARTI HAI
     <div className="bg-background">
       <Navbar />
       
