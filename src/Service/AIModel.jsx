@@ -1,55 +1,49 @@
-//src\Service\AIModel.jsx
+// src/Service/AIModel.jsx
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import JSON5 from 'json5'; // ✅ Nayi library import ki gayi
+import JSON5 from 'json5';
 
-// Environment variable se API key aana
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-// Agar key nahi hai toh error dena
 if (!apiKey) {
-  throw new Error("VITE_GEMINI_API_KEY .env file mein nahi hai");
+  throw new Error("VITE_GEMINI_API_KEY is not defined in the .env file");
 }
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
-// Main function jo AI se content generate karega
-async function main(prompt) {
-  // ✅ Ab console mein yeh message aana chahiye
-  console.log("FINAL JSON5 CODE IS RUNNING!"); 
+export default async function main(prompt) {
+  console.log("FINAL JSON5 CODE IS RUNNING!");
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
+    // --- FIX IS HERE ---
+    // Changed "gemini-pro" to "gemini-1.5-flash" to fix the 404 error
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });    
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const rawText = response.text();
 
     console.log("AI Raw Response:", rawText);
 
-    // Step 1: AI ke response se ```json wala block nikalo
+    // This regex correctly extracts the JSON content from markdown code blocks
     const match = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-    
-    let jsonStringToParse;
+    const jsonStringToParse = match && match[1] ? match[1] : rawText;
 
-    if (match && match[1]) {
-      jsonStringToParse = match[1];
-    } else {
-      jsonStringToParse = rawText;
-    }
-
-    // Step 2: Ab JSON.parse ki jagah JSON5.parse ka istemal karo
-    // Yeh comments, extra commas, sab kuch apne aap handle kar lega.
     try {
+      // JSON5 is used for more robust parsing
       return JSON5.parse(jsonStringToParse);
-    } catch (err) {
-      console.error("⚠️ AI ka response valid JSON nahi hai (JSON5 se bhi fail ho gaya):", err);
+    } catch (parseError) {
+      console.error("⚠️ AI response was not valid JSON (even with JSON5):", parseError);
+      // Return a structured error object
       return { error: "AI response could not be parsed as JSON.", raw: rawText };
     }
 
-  } catch (err) {
-    console.error("AI se content generate karte waqt error:", err);
-    return { error: err.message };
+  } catch (apiError) {
+    console.error("Error while generating content from AI:", apiError);
+    
+    const errorMessage = apiError.message || "An unknown API error occurred.";
+    return { 
+      error: `Failed to generate content from AI: ${errorMessage}`,
+      // Optionally include status if available, for debugging network issues
+      status: apiError.status || null 
+    };
   }
 }
-
-export default main;
